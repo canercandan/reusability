@@ -12,4 +12,126 @@
 
 \paragraph{C vs C++}
 
-Il est important de noter que les librairies ``PETSc''\footnote{Why is PETSc programmed in C, instead of Fortran or C++?: \url{http://www.mcs.anl.gov/petsc/petsc-as/documentation/faq.html#why-c}} et ``SLEPc'' ont été développées principalement en language C sans utilisation d'aucun paradigme de programmation. Nous avons donc choisit de porter le code des librairies en C++ afin de profiter du paradigme objet offert par ce dernier ainsi que les concepts de méta-programmation. Deux projets en découlent: ``petsc-cxx''\footnote{petsc-cxx: \url{https://github.com/canercandan/petsc-cxx}} et ``slepc-cxx''\footnote{slepc-cxx: \url{https://github.com/canercandan/slepc-cxx}}.
+Les librairies \petsc\footnote{Why is PETSc programmed in C, instead of Fortran or C++?: \url{http://www.mcs.anl.gov/petsc/petsc-as/documentation/faq.html#why-c}} et \slepc\ ont été développées principalement en langage C sans utilisation d'aucun paradigme de programmation. Nous avons donc choisit de porter le code des librairies en C++ afin de profiter du paradigme objet offert par ce dernier ainsi que les concepts de méta-programmation. Deux projets en découlent: \petscx\footnote{\petscx: \url{https://github.com/canercandan/petsc-cxx}} et \slepcx\footnote{\slepcx: \url{https://github.com/canercandan/slepc-cxx}}. Cela nous permet ainsi d'utiliser ces librairies d'une manière intuitive tout en profitant d'un langage fortement typé, bénéficiant de contrats d'utilisation\footnote{Interface} et de couches d'abstraction.
+
+\paragraph{\petscx}
+
+Pour situer le contexte de la librairie, nous utilisons l'espace de nom\footnote{Namespace} \verb#petsc_cxx#. Ainsi toutes les classes se situent dans ce même contexte. Les codes \ref{petsc_example} et \ref{petsc_cxx_example} illustrent les différences entre les librairies \petsc\ et \petscx.
+
+\begin{algorithm}[h]
+  \caption{Exemple de code en \petsc}
+  \label{petsc_example}
+\begin{verbatim}
+#include <petscsys.h>
+static char help[] = "Introductory example of "
+                     "code using PETSc.\n\n";
+int main(int ac, char** av)
+{
+    PetscInitialize(&ac, &av, (char *)0, help);
+    // YOUR CODE
+    PetscFinalize();
+    return 0;
+}
+\end{verbatim}
+\end{algorithm}
+
+\begin{algorithm}[h]
+  \caption{Exemple de code en \petscx}
+  \label{petsc_cxx_example}
+\begin{verbatim}
+#include <petsc_cxx/petsc_cxx>
+using namespace petsc_cxx;
+int main(int ac, char** av)
+{
+    Parser parser(ac, av, "Introductory "
+                          "example "
+                          "of code using "
+                          "petsc-cxx.");
+    Context context(parser);
+    // YOUR CODE
+    return 0;
+}
+\end{verbatim}
+\end{algorithm}
+
+Dans le cas de \petscx\ le simple fait d'inclure le fichier d'en-tête \verb#petsc_cxx/petsc_cxx# est suffisant. Il est éventuellement possible d'inclure uniquement des classes spécifiques afin d'alléger le code. Autre point, il n'est plus nécessaire de faire appel à une fonction tel que \verb#PetscFinalize()# à la fin du programme, ceci est fait de manière implicite lors de la sortie du contexte de la fonction \verb#main# depuis la classe \verb#petsc_cxx::Context#. Cette classe, prenant en paramètre un objet de type \verb#petsc_cxx::Parser#, doit être appelée au début du programme pour situer le contexte \petsc. La classe \verb#petsc_cxx::Parser#, quant à elle indique que l'on utilise le gestionnaire de paramètres de \petsc.
+
+\paragraph{\slepcx}
+
+Nous savons que la librairie \slepc\ est dépendante de \petsc, cela va de même pour la librairie \slepcx\ et \petscx. Nous utilisons également un espace de nom pour \slepcx, il s'agit de \verb#slepc_cxx#. Le code \ref{slepc_cxx_example} illustre l'initialisation d'un programme en \slepcx. D'autres exemples vont suivre.
+
+\begin{algorithm}[h]
+  \caption{Exemple de code en \slepcx}
+  \label{slepc_cxx_example}
+\begin{verbatim}
+#include <slepc_cxx/slepc_cxx>
+int main(int ac, char** av)
+{
+    slepc_cxx::Parser parser(ac, av,
+                             "Introductory "
+                             "example "
+                             "of code using "
+                             "slepc-cxx.");
+    petsc_cxx::Context context(parser);
+    // YOUR CODE
+    return 0;
+}
+\end{verbatim}
+\end{algorithm}
+
+Comme nous le disions, \slepcx\ dépend de \petscx, c'est la raison pour laquelle nous utilisons la classe \verb#petsc_cxx::Context# avec la classe \verb#slepc_cxx::Parser#. La classe \verb#slepc_cxx::Parser# permet d'utiliser le gestionnaire de paramètres de \slepc.
+
+\paragraph{Fonction objet}
+
+Ce nouveau design est centré autour de ce que l'on nomme des foncteurs ou encore fonction objet. Il s'agit d'utiliser une classe comme fonction, introduite en langage procédurale, tout en profitant des fonctionnalités apportées par la programmation objet. Ainsi il est possible de déléguer l'appel à une fonction objet. L'instanciation du foncteur s'effectuant avant l'appel, il est ainsi possible de passer des paramètres à sa constuction à travers le constructeur et d'effectuer ensuite l'appel.
+
+\paragraph{Opérations}
+
+La classe principale que l'on nommera \verb#petsc_cxx::BO#\footnote{Binary Operation}, est une classe abstraite représentant toutes les opérations binaires prenant 3 paramètres à l'appel (2 en entrée et 1 en sortie). Il s'agit d'une interface de foncteurs. Elle impose l'implémentation d'une méthode représentative de la fonction d'appel.
+
+Les classes d'opérations qui héritent de la classe \verb#petsc_cxx::BO# sont multiples, ci-dessous une liste non-exhaustive.
+
+\begin{itemize}
+\item \verb#petsc_cxx::MultiplyMatVec#, pour la résolution du système linéaire $Ax = b$
+\item \verb#petsc_cxx::AdditionMatrix#, pour l'addition de deux matrices
+\item \verb#petsc_cxx::Dot#, pour le produit scalaire de deux vecteurs
+\item \verb#petsc_cxx::Scal#, pour la mise à l'echelle d'un vecteur
+\end{itemize}
+
+\paragraph{Structure de données}
+
+Plusieurs types de structures de données ont été portées à ce nouveau design, ci-dessous une liste non-exhaustive.
+
+\begin{itemize}
+\item \verb#petsc_cxx::Scalar#, représente le type scalaire
+\item \verb#petsc_cxx::Int#, représente un entier
+\item \verb#petsc_cxx::Real#, représente un réel
+\item \verb#petsc_cxx::Truth#, représente une logique booléenne
+\item \verb#petsc_cxx::Matrix#, classe représentant une matrice
+\item \verb#petsc_cxx::Vector#, classe représentant un vecteur
+\end{itemize}
+
+\paragraph{Surcharge d'opérateurs}
+
+Le langage C++ nous offre également la possibilité de surcharger les différents operateurs. Il est ainsi possible d'implémenter un produit matrice-vecteur avec un code proche de l'équation mathématique $Ax = b$. Un exemple est illustré dans le code \ref{matrix_vector_example}.
+
+\begin{algorithm}[h]
+  \caption{Exemple de code illustrant le produit matrice-vecteur en \petscx}
+  \label{matrix_vector_example}
+\begin{verbatim}
+#include <petsc_cxx/petsc_cxx>
+using namespace petsc_cxx;
+int main(int ac, char** av)
+{
+    Parser parser(ac, av);
+    petsc_cxx::Context context(parser);
+    const Int N = 4;
+    Matrix< Scalar > A(N,N,4);
+    Vector< Scalar > x(n,2);
+    Vector< Scalar > b = A * b;
+    return 0;
+}
+\end{verbatim}
+\end{algorithm}
+
+La variable $A$ est instanciée avec la classe \verb#Matrix<T>#. La variable $x$ est instanciée avec la classe \verb#Vector<T>#. Tous deux utilisent le type \verb#Scalar#. Puis le produit de $A$ et $b$ est assigné à la variable $b$. De manière implicite des routines sont appelées en \petsc pour réaliser le produit. Les paramètres passés à l'instance de la matrice sont respectivement le nombre de lignes, le nombre de colonnes et la valeur initiale pour tous les points de la matrice.

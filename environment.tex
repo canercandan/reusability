@@ -12,11 +12,11 @@
 
 \paragraph{Préambule}
 
-Il est important, avant tout, de présenter les démarches nécessaires à l'installation et la configuration de l'environnement. Nous entendons principalement par environnement les librairies ``PETSc'' et ``SLEPc''. Puis nous aborderons une méthode de configuration d'un projet utilisant ces librairies à l'aide d'outil comme ``CMake''.
+Il est important, avant tout, de présenter les démarches nécessaires à l'installation et la configuration de l'environnement. Nous entendons principalement par environnement les librairies \petsc\ et \slepc. Puis nous aborderons une méthode de configuration d'un projet utilisant ces librairies à l'aide d'outils comme \cmake.
 
 \paragraph{Installation}
 
-Utilisant un OS basé sur ``debian'', une ``Ubuntu 10.10'', il est possible d'installer ``PETSc'' et ``SLEPSc'', sans qu'aucune compilation soit nécessaire. En effet nous pouvons utiliser l'outil d'installation de paquets ``aptitute''. Une rapide introduction est présenté en figure \ref{fig:installation}.
+Utilisant un OS basé sur ``debian'', une ``Ubuntu 10.10'', il est possible d'installer \petsc\ et \slepc, sans qu'aucune compilation soit nécessaire. En effet nous pouvons utiliser l'outil d'installation de paquets ``aptitute''. Une rapide introduction est présenté en figure \ref{fig:installation}.
 
 \begin{figure}[here]
 \begin{verbatim}
@@ -34,12 +34,12 @@ $> sudo aptitude install slepc3.1-doc
 
 \paragraph{Configuration}
 
-Puis pour éviter les ``Makefile'' désordonés et incomplètes fournit dans les exemples des librairies ainsi que les variables d'environnement à définir, nous pouvons faire appel à l'outil ``CMake''\footnote{CMake: générateur et language haut niveau de Makefile multi-plateforme}.\\
+Puis pour éviter les ``Makefile'' désordonnés et incomplètes fournit dans les exemples des librairies ainsi que les variables d'environnement à définir, nous pouvons faire appel à l'outil \cmake\footnote{\cmake: générateur et langage haut niveau de Makefile multi-plateforme}.\\
 
-Ce dernier facilite grandement la configuration d'un projet en ``PETSc''\footnote{FindPETSc.cmake available from \url{https://github.com/jedbrown/cmake-modules/blob/master/FindPETSc.cmake}} ou ``SLEPc'' et permet ainsi à quiconque une rapide prise en main des bibliothèques utilisées. De plus la configuration de ``CMake'' est multi-plateforme. Le code \ref{cmake_project_hello} illustre un exemple de fichier de configuration ``CMake'' pour un projet basic.
+Ce dernier facilite grandement la configuration d'un projet en \petsc\footnote{FindPETSc.cmake available from \url{https://github.com/jedbrown/cmake-modules/blob/master/FindPETSc.cmake}} ou \slepc\ et permet ainsi à quiconque une rapide prise en main des bibliothèques utilisées. De plus la configuration de \cmake\ est multi-plateforme. Le code \ref{cmake_project_hello} illustre un exemple de fichier de configuration \cmake\ pour un projet simple.
 
 \begin{algorithm}[h]
-  \caption{Fichier de configuration d'un projet projet pour le programme ``hello world'' en PETSc avec CMake}
+  \caption{Fichier de configuration d'un projet pour le programme ``hello world'' en \petsc\ avec \cmake}
   \label{cmake_project_hello}
 \begin{verbatim}
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
@@ -50,3 +50,6 @@ ADD_EXECUTABLE(hello hello.cpp)
 TARGET_LINK_LIBRARIES(hello ${PETSC_LIBRARIES})
 \end{verbatim}
 \end{algorithm}
+
+%\paragraph{\yml}
+% explication sur l'installation YML
