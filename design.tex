@@ -127,7 +127,7 @@ int main(int ac, char** av)
     petsc_cxx::Context context(parser);
     const Int N = 4;
     Matrix< Scalar > A(N,N,10);
-    Vector< Scalar > x(n,2);
+    Vector< Scalar > x(N,2);
     Vector< Scalar > b = A * b;
     return 0;
 }
