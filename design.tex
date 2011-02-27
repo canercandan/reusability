@@ -16,7 +16,7 @@ Les librairies \petsc\footnote{Why is PETSc programmed in C, instead of Fortran 
 
 \paragraph{\petscx}
 
-Pour situer le contexte de la librairie, nous utilisons l'espace de nom\footnote{Namespace} \verb#petsc_cxx#. Ainsi toutes les classes se situent dans ce même contexte. Les codes \ref{petsc_example} et \ref{petsc_cxx_example} illustrent les différences entre les librairies \petsc\ et \petscx.
+Pour situer le contexte de la librairie, nous utilisons l'espace de nom\footnote{Namespace} \verb#petsc_cxx#. Ainsi toutes les classes se situent dans ce même contexte. Les codes \ref{petsc_example} et \ref{petsc_cxx_example} illustrent quelques différences entre les librairies \petsc\ et \petscx.
 
 \begin{algorithm}[h]
   \caption{Exemple de code en \petsc}
@@ -134,4 +134,4 @@ int main(int ac, char** av)
 \end{verbatim}
 \end{algorithm}
 
-La variable $A$ est instanciée avec la classe \verb#Matrix<T>#. La variable $x$ est instanciée avec la classe \verb#Vector<T>#. Tous deux utilisent le type \verb#Scalar#. Puis le produit de $A$ et $x$ est assigné à la variable $b$. De manière implicite des routines sont appelées en \petsc pour réaliser le produit. Les paramètres passés à l'instance de la matrice sont respectivement le nombre de lignes, le nombre de colonnes et la valeur initiale pour tous les éléments de la matrice.
+La variable $A$ est instanciée avec la classe \verb#Matrix<T>#. La variable $x$ est instanciée avec la classe \verb#Vector<T>#. Tous deux utilisent le type \verb#Scalar#. Puis le produit de $A$ et $x$ est assigné à la variable $b$. De manière implicite des routines sont appelées en \petsc\ pour réaliser le produit. Les paramètres passés à l'instance de la matrice sont respectivement le nombre de lignes, le nombre de colonnes et la valeur initiale pour tous les éléments de la matrice.

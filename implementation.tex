@@ -10,8 +10,200 @@
 
 \section{Implémentation}
 
+Dans cette section nous allons voir comment implémenter des opérations matricielles de bases puis nous aborderons une implémentation de la méthode itérative ERAM et de la méthode hybride MERAM.
+
 \paragraph{Opérations matricielles}
+
+Le code \ref{ksp_matvec} illustre le produit matrice-vecteur sur le sous-espace de Krylov.
+
+\begin{algorithm}[h]
+  \caption{Exemple de code illustrant le produit matrice-vecteur sur le sous-espace de Krylov}
+  \label{ksp_matvec}
+\begin{verbatim}
+#include <petsc_cxx/petsc_cxx>
+using namespace petsc_cxx;
+int main(int ac, char** av)
+{
+    Parser parser(ac, av);
+    Context context(parser);
+    const Int N = 4;
+    Matrix< Scalar > A(N,N,10);
+    Vector< Scalar > x(N,2);
+    Vector< Scalar > b(N);
+    Krylov< Scalar > ksp;
+    ksp(A,x,b);
+    return 0;
+}
+\end{verbatim}
+\end{algorithm}
+
+Nous utilisons la classe \verb#Krylov<T># implémenté dans la librairie \petscx. Cette classe appelle les fonctions de la structure \verb#KSP# disponible dans \petsc. Nous passons à l'instance \verb#ksp# de la classe, la matrice \verb#A# et les vecteurs \verb#x# et \verb#b#. Le resultat étant sauvegardé dans le vecteur \verb#b#.
+
+\paragraph{EPS}
+
+La librairie \slepc\ introduit une famille de fonctions, appelé \verb#EPS#\footnote{EPS: Eigen Problem Solver}, pour le calcul des valeurs propres. Il est indispensable de définir la méthode de résolution à utiliser parmi celles disponible:\\
+
+\begin{itemize}
+\item ``power'',
+\item ``subspace'',
+\item ``arnoldi'',
+\item ``lanczos'',
+\item ``krylovschur'',
+\item ``lapack''
+\item ``arpack''
+\item ``blzpack'',
+\item ``trlan'',
+\item ``blopex'',
+\item ``primme''\\
+\end{itemize}
+
+Nous utiliserons dans notre cas la méthode d'Arnoldi.
+
+
+\paragraph{La projection d'Arnoldi}
+
+Nous ne pourrons aborder la méthode d'Arnoldi sans décrire sa méthode de projection. L'algorithme \ref{projection} illustre ainsi la méthode de projection d'Arnoldi aussi appelé réduction d'Arnoldi.
+
+\begin{algorithm}[h]
+  \caption{Algorithme RA $(in:A,n,m,V,out:Hm,Vm)$}
+  \label{projection}
+\begin{enumerate}
+\item Phase d'initialisation: Choix de $m$ et de $V (V_1 = \frac{V}{||V||})$
+\item Phase de Projection:
+\begin{verbatim}
+Pour j = 1 à m faire
+  z = AV_j
+  Pour i = 1 à m faire
+    h_ij = (z,v_i) //
+    dot = Sigma(n,i=1)(x_i * y_i)
+    z = z - h_ij * v_i
+  Fin pour i
+
+  h_j+1,j = || z ||
+  v_j+1 = z / h_j+1,j
+Fin pour j
+\end{verbatim}
+
+\item $Hm y_i = ~\lambda_i y_i, i|m,1$
+\item $~u_i = V_m * y_i, i|m,1$
+
+\end{enumerate}
+\end{algorithm}
+
+$Hm$ est une matrice d'Hessenberg inférieur.\footnote{\url{http://fr.wikipedia.org/wiki/Matrice_de_Hessenberg}}
+
+\paragraph{Méthode d'Arnoldi}
+
+L'algorithme \ref{ma} illustre les différentes étapes que constitue la méthode d'Arnoldi.
+
+\begin{algorithm}[h]
+  \caption{Algorithme MA $(in:A,n,s,m,V;out:\lambda_s,U_s)$}
+  \label{ma}
+  \begin{enumerate}
+  \item Algorithme $RA(in:A,n,m,V;out:\lambda_m,U_m)$
+  \item Résolution du probleme de valeur propre: $H_m.y_i = ~\lambda_i.y_i$ pour $i = 1$ à $m$ et selection de $s$ valeurs propres désirées
+  \item Retour dans l'espace de départ: $~U_i = V_m.y_i$ pour $i = 1$ à $s$
+  \end{enumerate}
+\end{algorithm}
+
+\slepc\ fournit un panel d'options pour les différentes méthodes de résolution notemment pour Arnoldi. Il est par exemple possible d'utiliser la méthode d'Arnoldi en mode différé avec l'option \verb#-eps_arnoldi_delayed#.
 
 \paragraph{Méthode itérative ERAM}
 
+Il\footnote{ERAM: Explicitely Restarted Arnoldi Method} s'agit d'un bon représentant des méthodes itératives d'algèbre linéaire. Elle contient toutes les operations élémentaires des méthodes itératives de Krylov.
+
+L'algorithme \ref{eram} illustre les différentes étapes que constitue ERAM.
+
+\begin{algorithm}[h]
+  \caption{Algorithme ERAM $(in:A,n,s,l,M,V,Tol;out: 1_s, U_s, Rho_s)$}
+  \label{eram}
+  \begin{enumerate}
+  \item Choix de $m,V,Tol$ \footnote{$Tol =$ valeur de tolérance}
+  \item \label{eram_step2} Algorithme $MA(in: A,n,s,m,V;out:\lambda_s,U_s)$
+  \item
+\begin{verbatim}
+Si rho_i = || A~u_i - ~lambda_i ~u_i ||\
+   > Tol pour i = 1 à s alors
+  V = sum^s_{i=1} alpha_i . ~u_i et\
+  aller à l'étape 2.
+Sinon Stop
+\end{verbatim}
+  \end{enumerate}
+\end{algorithm}
+
+La méthode de résolution d'Arnoldi, intégré à \slepc\, est une méthode ERAM. Le code \ref{eps} présente un exemple d'implémentation de la méthode ERAM en \slepcx.
+
+\begin{algorithm}[h]
+  \caption{Implémentation de ERAM en \slepcx}
+  \label{eps}
+\begin{verbatim}
+#include <slepc_cxx/slepc_cxx>
+typedef petsc_cxx::Scalar T;
+int main(int ac, char** av)
+{
+    slepc_cxx::Parser parser(ac, av);
+    petsc_cxx::Context context(parser);
+    const Int N = 30;
+    petsc_cxx::Matrix<T> A(N);
+
+    // Quelques routines de remplissage
+    // de la matrice creuse A
+    // à l'aide des fonctions SLEPC.
+
+    slepc_cxx::EPSolver<T> eps(EPSARNOLDI);
+    eps(A);
+
+    return 0;
+}
+\end{verbatim}
+\end{algorithm}
+
 \paragraph{Méthode hybride MERAM}
+
+Une méthode hybride est une méthode définie par un ensemble de méthodes itératives qui collaborent afin d'accélérer la convergence d'une entre elles.\\
+
+MERAM\footnote{MERAM: Multi-ERAM} est une méthode hybride définie par un ensemble d'instances d'une même méthode itératives (co-méthodes) qui collaborent afin d'accélerer la convergence d'une entre elles.\\
+
+L'algorithme \ref{meram} illustre les différentes étapes que constitue MERAM.\\
+
+\begin{algorithm}[h]
+  \caption{Algorithme MERAM $(in:A,n,s,l,M,V,Tol;out: 1_s, U_s, Rho_s)$}
+  \label{meram}
+  \begin{enumerate}
+  \item Projection
+  \item Resolution dans le sous-espace
+  \item Retour dans l'espace de départ
+  \end{enumerate}
+\end{algorithm}
+
+On cherche $s$ valeurs et vecteurs propres d'une matrice creuse $A$ d'ordre $n$.
+
+Le code \ref{eps_meram} présente un exemple d'implémentation de la méthode MERAM en \slepcx.
+
+\begin{algorithm}[h]
+  \caption{Implémentation de MERAM en \slepcx}
+  \label{eps_meram}
+\begin{verbatim}
+#include <slepc_cxx/slepc_cxx>
+typedef petsc_cxx::Scalar T;
+int main(int ac, char** av)
+{
+    slepc_cxx::Parser parser(ac, av);
+    petsc_cxx::Context context(parser);
+    const Int N = 30;
+    petsc_cxx::Matrix<T> A(N);
+
+    // Quelques routines de remplissage
+    // de la matrice creuse A
+    // à l'aide des fonctions SLEPC.
+
+    slepc_cxx::EPSolver<T> eps(EPSARNOLDI);
+    slepc_cxx::MERAM<T> meram(eps);
+    meram(A);
+
+    return 0;
+}
+\end{verbatim}
+\end{algorithm}
+
+En reprenant le code d'implémentation de la méthode ERAM nous incluons l'appel à la classe MERAM dans la librairie \slepcx\ effectuant les différantes étapes cités précédement.

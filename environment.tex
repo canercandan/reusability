@@ -44,10 +44,22 @@ Ce dernier facilite grandement la configuration d'un projet en \petsc\footnote{F
 \begin{verbatim}
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 PROJECT(hello)
-INCLUDE(FindPETSc)
+FIND_PACKAGE(PETSc REQUIRED)
 INCLUDE_DIRECTORIES( ${PETSC_INCLUDES} )
 ADD_EXECUTABLE(hello hello.cpp)
 TARGET_LINK_LIBRARIES(hello ${PETSC_LIBRARIES})
+\end{verbatim}
+\end{algorithm}
+
+De la même manière il suffirait d'inclure le code \ref{cmake_slepc} pour compiler un projet en \slepc.
+
+\begin{algorithm}[h]
+  \caption{Configuration additionnel pour un projet en \slepc}
+  \label{cmake_slepc}
+\begin{verbatim}
+FIND_PACKAGE(SLEPC REQUIRED)
+INCLUDE_DIRECTORIES( ${SLEPC_INCLUDES} )
+TARGET_LINK_LIBRARIES(hello ${SLEPC_LIBRARIES})
 \end{verbatim}
 \end{algorithm}
 
