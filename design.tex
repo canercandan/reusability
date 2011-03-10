@@ -83,7 +83,7 @@ Comme nous le disions, \slepcx\ dépend de \petscx, c'est la raison pour laquell
 
 \paragraph{Fonction objet}
 
-Ce nouveau design est centré autour de ce que l'on nomme des foncteurs ou encore fonction objet. Il s'agit d'utiliser une classe comme fonction, introduite en langage procédurale, tout en profitant des fonctionnalités apportées par la programmation objet. Ainsi il est possible de déléguer l'appel à une fonction objet. L'instanciation du foncteur s'effectuant avant l'appel, il est ainsi possible de passer des paramètres à sa constuction à travers le constructeur et d'effectuer ensuite l'appel.
+Ce nouveau design est centré autour de ce que l'on nomme des foncteurs ou encore fonction objet. Il s'agit d'utiliser une classe comme fonction, introduite en langage procédurale, tout en profitant des fonctionnalités apportées par la programmation objet. Ainsi il est possible de déléguer l'appel à une fonction objet. L'instanciation du foncteur s'effectuant avant l'appel, il est ainsi possible de passer des paramètres à sa construction à travers le constructeur et d'effectuer ensuite l'appel.
 
 \paragraph{Opérations}
 
@@ -95,7 +95,7 @@ Les classes d'opérations qui héritent de la classe \verb#petsc_cxx::BO# sont m
 \item \verb#petsc_cxx::MultiplyMatVec#, pour la résolution du système linéaire $Ax = b$
 \item \verb#petsc_cxx::AdditionMatrix#, pour l'addition de deux matrices
 \item \verb#petsc_cxx::Dot#, pour le produit scalaire de deux vecteurs
-\item \verb#petsc_cxx::Scal#, pour la mise à l'echelle d'un vecteur
+\item \verb#petsc_cxx::Scal#, pour la mise à l'échelle d'un vecteur
 \end{itemize}
 
 \paragraph{Structure de données}
@@ -113,7 +113,7 @@ Plusieurs types de structures de données ont été portées à ce nouveau desig
 
 \paragraph{Surcharge d'opérateurs}
 
-Le langage C++ nous offre également la possibilité de surcharger les différents operateurs. Il est ainsi possible d'implémenter un produit matrice-vecteur avec un code proche de l'équation mathématique $Ax = b$. Un exemple est illustré dans le code \ref{matrix_vector_example}.
+Le langage C++ nous offre également la possibilité de surcharger les différents opérateurs. Il est ainsi possible d'implémenter un produit matrice-vecteur avec un code proche de l'équation mathématique $Ax = b$. Un exemple est illustré dans le code \ref{matrix_vector_example}.
 
 \begin{algorithm}[h]
   \caption{Exemple de code illustrant le produit matrice-vecteur en \petscx}

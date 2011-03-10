@@ -37,7 +37,7 @@ int main(int ac, char** av)
 \end{verbatim}
 \end{algorithm}
 
-Nous utilisons la classe \verb#Krylov<T># implémenté dans la librairie \petscx. Cette classe appelle les fonctions de la structure \verb#KSP# disponible dans \petsc. Nous passons à l'instance \verb#ksp# de la classe, la matrice \verb#A# et les vecteurs \verb#x# et \verb#b#. Le resultat étant sauvegardé dans le vecteur \verb#b#.
+Nous utilisons la classe \verb#Krylov<T># implémenté dans la librairie \petscx. Cette classe appelle les fonctions de la structure \verb#KSP# disponible dans \petsc. Nous passons à l'instance \verb#ksp# de la classe, la matrice \verb#A# et les vecteurs \verb#x# et \verb#b#. Le résultat étant sauvegardé dans le vecteur \verb#b#.
 
 \paragraph{EPS}
 
@@ -101,16 +101,16 @@ L'algorithme \ref{ma} illustre les différentes étapes que constitue la méthod
   \label{ma}
   \begin{enumerate}
   \item Algorithme $RA(in:A,n,m,V;out:\lambda_m,U_m)$
-  \item Résolution du probleme de valeur propre: $H_m.y_i = ~\lambda_i.y_i$ pour $i = 1$ à $m$ et selection de $s$ valeurs propres désirées
+  \item Résolution du problème de valeur propre: $H_m.y_i = ~\lambda_i.y_i$ pour $i = 1$ à $m$ et sélection de $s$ valeurs propres désirées
   \item Retour dans l'espace de départ: $~U_i = V_m.y_i$ pour $i = 1$ à $s$
   \end{enumerate}
 \end{algorithm}
 
-\slepc\ fournit un panel d'options pour les différentes méthodes de résolution notemment pour Arnoldi. Il est par exemple possible d'utiliser la méthode d'Arnoldi en mode différé avec l'option \verb#-eps_arnoldi_delayed#.
+\slepc\ fournit un panel d'options pour les différentes méthodes de résolution notamment pour Arnoldi. Il est par exemple possible d'utiliser la méthode d'Arnoldi en mode différé avec l'option \verb#-eps_arnoldi_delayed#.
 
 \paragraph{Méthode itérative ERAM}
 
-Il\footnote{ERAM: Explicitely Restarted Arnoldi Method} s'agit d'un bon représentant des méthodes itératives d'algèbre linéaire. Elle contient toutes les operations élémentaires des méthodes itératives de Krylov.
+Il\footnote{ERAM: Explicitely Restarted Arnoldi Method} s'agit d'un bon représentant des méthodes itératives d'algèbre linéaire. Elle contient toutes les opérations élémentaires des méthodes itératives de Krylov.
 
 L'algorithme \ref{eram} illustre les différentes étapes que constitue ERAM.
 
@@ -162,7 +162,7 @@ int main(int ac, char** av)
 
 Une méthode hybride est une méthode définie par un ensemble de méthodes itératives qui collaborent afin d'accélérer la convergence d'une entre elles.\\
 
-MERAM\footnote{MERAM: Multi-ERAM} est une méthode hybride définie par un ensemble d'instances d'une même méthode itératives (co-méthodes) qui collaborent afin d'accélerer la convergence d'une entre elles.\\
+MERAM\footnote{MERAM: Multi-ERAM} est une méthode hybride définie par un ensemble d'instances d'une même méthode itératives (co-méthodes) qui collaborent afin d'accélérer la convergence d'une entre elles.\\
 
 L'algorithme \ref{meram} illustre les différentes étapes que constitue MERAM.\\
 
@@ -206,4 +206,4 @@ int main(int ac, char** av)
 \end{verbatim}
 \end{algorithm}
 
-En reprenant le code d'implémentation de la méthode ERAM nous incluons l'appel à la classe MERAM dans la librairie \slepcx\ effectuant les différantes étapes cités précédement.
+En reprenant le code d'implémentation de la méthode ERAM nous incluons l'appel à la classe MERAM dans la librairie \slepcx\ effectuant les différentes étapes cités précédemment.
